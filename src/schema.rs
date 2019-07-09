@@ -1,5 +1,5 @@
 table! {
-    post (id) {
+    posts (id) {
         id -> Uuid,
         message -> Text,
     }
