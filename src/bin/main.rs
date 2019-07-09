@@ -4,25 +4,15 @@ use rocket::{routes, get, post, delete, put};
 use rocket;
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::json;
-use serde_derive::{Serialize, Deserialize};
-use uuid::Uuid;
 use rocket_contrib;
-
-
-#[derive(Serialize, Deserialize)]
-struct Post {
-    id: Uuid,
-    message: String
-}
+use rust_server::models::Post;
+use rust_server::*;
 
 #[get("/posts")]
 fn posts() ->Json<Vec<Post>> {
     // TODO
     // Get posts from DB
-    Json(vec![Post{
-        id: uuid::Uuid::new_v4(),
-        message: String::from("Hi")
-    }])
+    Json(get_all_posts())
 }
 
 #[get("/post/<id>")]
@@ -37,8 +27,15 @@ fn post(id: rocket_contrib::uuid::Uuid) -> Json<Post> {
 
 #[post("/post", format = "json", data = "<post>")]
 fn new(post: Json<Post>) -> JsonValue {
-    // TODO link to diesel and create in db
-    json!({"status": "created"})
+    let rows_inserted = create_post(post.into_inner());
+    match rows_inserted {
+        Ok(_val) => json!({
+            "status": "created"
+        }),
+        Err(e) => json!({
+            "error" : e.to_string()
+        })
+    }
 }
 
 #[delete("/post/<id>")]
@@ -54,6 +51,5 @@ fn update(id: rocket_contrib::uuid::Uuid, post: Json<Post>) -> Json<Post> {
 }
 
 fn main() {
-    use rust_server::schema::post::dsl::*;
     rocket::ignite().mount("/", routes![posts, post, new, delete, update]).launch();
 }

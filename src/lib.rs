@@ -19,11 +19,20 @@ pub fn establish_connection() -> PgConnection {
         .expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn getAllPosts() -> Vec<Post> {
-    use schema::post::dsl::*;
+pub fn get_all_posts() -> Vec<Post> {
+    use schema::posts::dsl::*;
 
     let connection = establish_connection();
-    post.limit(5)
+    posts.limit(5)
         .load::<Post>(&connection)
         .expect("Error loading posts")
+}
+
+pub fn create_post(post_to_insert: Post) -> Result<usize, diesel::result::Error> {
+    let connection = establish_connection();
+    use schema::posts::dsl::*;
+    let rows_inserted = diesel::insert_into(posts)
+    .values(&post_to_insert)
+    .execute(&connection);
+    rows_inserted
 }
