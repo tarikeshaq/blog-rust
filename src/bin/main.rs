@@ -9,20 +9,21 @@ use rust_server::models::Post;
 use rust_server::*;
 
 #[get("/posts")]
-fn posts() ->Json<Vec<Post>> {
-    // TODO
-    // Get posts from DB
-    Json(get_all_posts())
+fn posts() ->Option<Json<Vec<Post>>> {
+
+    match get_all_posts() {
+        Ok(posts) => Some(Json(posts)),
+        // TODO Add error handling
+        Err(_e) => None
+    }
 }
 
 #[get("/post/<id>")]
-fn post(id: rocket_contrib::uuid::Uuid) -> Json<Post> {
-    // TODO
-    // Get post with given id
-    Json(Post{
-        id: uuid::Uuid::parse_str(&id.into_inner().to_string()).unwrap(),
-        message: String::from("It works!")
-    })
+fn post(id: rocket_contrib::uuid::Uuid) -> Option<Json<Post>> {
+    match get_post(uuid::Uuid::parse_str(&id.into_inner().to_string()).unwrap()) {
+        Ok(post) => Some(Json(post)),
+        Err(_e) => None
+    }
 }
 
 #[post("/post", format = "json", data = "<post>")]

@@ -9,3 +9,12 @@ pub struct Post {
     pub id: Uuid,
     pub message: String
 }
+
+impl Post {
+    pub fn clone(&self) -> Post {
+        Post {
+            id: self.id,
+            message: self.message.clone()
+        }
+    }
+}
