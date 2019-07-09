@@ -30,7 +30,7 @@ fn post(id: rocket_contrib::uuid::Uuid) -> Json<Post> {
     // TODO
     // Get post with given id
     Json(Post{
-        id: id.into_inner(),
+        id: uuid::Uuid::parse_str(&id.into_inner().to_string()).unwrap(),
         message: String::from("It works!")
     })
 }
@@ -54,5 +54,6 @@ fn update(id: rocket_contrib::uuid::Uuid, post: Json<Post>) -> Json<Post> {
 }
 
 fn main() {
+    use rust_server::schema::post::dsl::*;
     rocket::ignite().mount("/", routes![posts, post, new, delete, update]).launch();
 }
