@@ -62,7 +62,6 @@ pub fn update_post(id_to_update: uuid::Uuid, post: Post) -> Result<Post, diesel:
 }
 
 pub fn delete_post(id_to_delete: uuid::Uuid) -> Result<usize, diesel::result::Error> {
-    // Stub
     let connection = establish_connection();
     diesel::delete(posts.filter(id.eq(id_to_delete)))
             .execute(&connection)
