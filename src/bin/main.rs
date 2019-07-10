@@ -40,8 +40,12 @@ fn new(post: Json<Post>) -> JsonValue {
 
 #[delete("/post/<id>")]
 fn delete(id: rocket_contrib::uuid::Uuid) -> JsonValue {
-    // TODO delete from db with id 
-    json!({"status": "deleted", "id": id.into_inner().to_string()})
+    let deleted = delete_post(uuid::Uuid::parse_str(&id.to_string()).unwrap());
+    match deleted {
+        Ok(_val) => json!({"status": "deleted", "id": id.into_inner().to_string()}),
+        Err(e) => json!({"status": "could not delete", "error": e.to_string()})
+    }
+    
 }
 
 #[put("/post/<id>", format = "json", data = "<post>")]
@@ -50,7 +54,7 @@ fn update(id: rocket_contrib::uuid::Uuid, post: Json<Post>) -> Option<Json<Post>
     match updated_successfully {
         Ok(post_updated) => Some(Json(post_updated)),
         // TODO add error handling
-        Err(e) => None
+        Err(_e) => None
     } 
 }
 
