@@ -6,7 +6,7 @@ use crate::establish_connection;
 use crate::diesel::prelude::*;
 
 
-#[derive(Queryable, Serialize, Deserialize, Insertable, Associations)]
+#[derive(Queryable, Serialize, Deserialize, Insertable, Associations, AsChangeset)]
 #[table_name = "posts"]
 pub struct Post {
     pub id: Uuid,
@@ -52,4 +52,11 @@ pub fn create_post(post_to_insert: Post) -> Result<usize, diesel::result::Error>
     .values(&post_to_insert)
     .execute(&connection);
     rows_inserted
+}
+
+pub fn update_post(id_to_update: uuid::Uuid, post: Post) -> Result<Post, diesel::result::Error> {
+    let connection = establish_connection();
+    diesel::update(posts.filter(id.eq(id_to_update)))
+                .set(&post)
+                .get_result(&connection)
 }

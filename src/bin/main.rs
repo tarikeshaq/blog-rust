@@ -45,9 +45,13 @@ fn delete(id: rocket_contrib::uuid::Uuid) -> JsonValue {
 }
 
 #[put("/post/<id>", format = "json", data = "<post>")]
-fn update(id: rocket_contrib::uuid::Uuid, post: Json<Post>) -> Json<Post> {
-    // TODO Update value in db
-    Json(post.into_inner())
+fn update(id: rocket_contrib::uuid::Uuid, post: Json<Post>) -> Option<Json<Post>> {
+    let updated_successfully = update_post(uuid::Uuid::parse_str(&id.to_string()).unwrap(), post.into_inner());
+    match updated_successfully {
+        Ok(post_updated) => Some(Json(post_updated)),
+        // TODO add error handling
+        Err(e) => None
+    } 
 }
 
 fn main() {
