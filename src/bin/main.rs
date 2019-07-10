@@ -5,8 +5,7 @@ use rocket;
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::json;
 use rocket_contrib;
-use rust_server::models::Post;
-use rust_server::*;
+use rust_server::models::*;
 
 #[get("/posts")]
 fn posts() ->Option<Json<Vec<Post>>> {
